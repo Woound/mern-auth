@@ -1,13 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from '../redux/user/userSlice'
+import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 
 const SignIn = () => {
   const [formData, setFormData] = useState({})
-  const [error, setError] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const { loading, error } = useSelector((state) => state.user)
   const navigate = useNavigate()
-
+  const dispatch = useDispatch()
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value })
   }
@@ -26,17 +31,15 @@ const SignIn = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault()
-    setLoading(true)
+    dispatch(signInStart())
     axios
       .post('/api/auth/signin', formData)
-      .then(() => {
-        setLoading(false)
-        setError(false)
+      .then((result) => {
+        dispatch(signInSuccess(result))
         navigate('/')
       })
-      .catch(() => {
-        setLoading(false)
-        setError(true)
+      .catch((error) => {
+        dispatch(signInFailure(error))
       })
   }
 
@@ -73,7 +76,9 @@ const SignIn = () => {
           </Link>
         </p>
       </div>
-      <p className=' text-red-700 mt-5'>{error && 'Something went wrong'}</p>
+      <p className=' text-red-700 mt-5'>
+        {error ? error.response.data.error || 'Something went wrong.' : ''}
+      </p>
     </div>
   )
 }
