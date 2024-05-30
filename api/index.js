@@ -5,6 +5,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 const usersRouter = require('./routes/users.route')
 const authRouter = require('./routes/auth.route')
+const cookieParser = require('cookie-parser')
 
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -20,6 +21,7 @@ app.listen(3000, () => {
 })
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.use('/api/users', usersRouter)
 app.use('/api/auth', authRouter)
