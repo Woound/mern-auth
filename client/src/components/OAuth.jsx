@@ -20,7 +20,6 @@ const OAuth = () => {
       await axios
         .post('/api/auth/google', newUser)
         .then((data) => {
-          console.log(data)
           dispatch(signInSuccess(data))
         })
         .catch((error) => {
