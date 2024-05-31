@@ -5,6 +5,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 const usersRouter = require('./routes/users.route')
 const authRouter = require('./routes/auth.route')
+const path = require('path')
 const cookieParser = require('cookie-parser')
 
 mongoose
@@ -18,6 +19,12 @@ mongoose
 
 app.listen(3000, () => {
   console.log('Server running on port 3000')
+})
+
+app.use(express.static(path.join(path.resolve(), '/client/dist')))
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(path.resolve(), 'client', 'dist', 'index.html'))
 })
 
 app.use(express.json())
