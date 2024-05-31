@@ -13,6 +13,9 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserFailure,
+  deleteUserSuccess,
 } from '../redux/user/userSlice'
 
 const Profile = () => {
@@ -60,20 +63,38 @@ const Profile = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     dispatch(updateUserStart())
-    try {
-      axios
-        .post(`/api/users/update/${currentUser.data._id}`, formData)
-        .then((result) => {
-          if (result.success === false) {
-            dispatch(updateUserFailure(result))
-            return
-          }
-          dispatch(updateUserSuccess(result))
-          setUpdateSuccess(true)
-        })
-    } catch (error) {
-      dispatch(updateUserFailure(error))
-    }
+    axios
+      .post(`/api/users/update/${currentUser.data._id}`, formData)
+      .then((result) => {
+        if (result.success === false) {
+          dispatch(updateUserFailure(result))
+          return
+        }
+        dispatch(updateUserSuccess(result))
+        setUpdateSuccess(true)
+      })
+      .catch((error) => {
+        dispatch(updateUserFailure(error))
+      })
+  }
+
+  const handleDeleteAccount = async () => {
+    console.log(loading)
+    console.log(error)
+    dispatch(deleteUserStart())
+    axios
+      .delete(`/api/users/delete/${currentUser.data._id}`)
+      .then((result) => {
+        if (result.success === false) {
+          dispatch(deleteUserFailure(result))
+          console.log(result)
+          return
+        }
+        dispatch(deleteUserSuccess(result))
+      })
+      .catch((error) => {
+        dispatch(deleteUserFailure(error))
+      })
   }
 
   return (
@@ -137,12 +158,19 @@ const Profile = () => {
         </button>
       </form>
       <div className='flex justify-between mt-5'>
-        <span className='text-red-700 cursor-pointer'>Delete Account</span>
+        <span
+          onClick={handleDeleteAccount}
+          className='text-red-700 cursor-pointer'
+        >
+          Delete Account
+        </span>
         <span className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
-      <p className='text-red-700 mt-5'>{error && 'Something went wrong.'}</p>
+      <p className='text-red-700 mt-5'>
+        {error ? 'Something went wrong.' : ''}
+      </p>
       <p className='text-green-700 mt-5'>
-        {updateSuccess && 'Details updated successfully.'}
+        {updateSuccess ? 'Details updated successfully.' : ''}
       </p>
     </div>
   )
